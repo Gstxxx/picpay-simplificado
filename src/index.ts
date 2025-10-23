@@ -13,7 +13,7 @@ import { startNotificationWorker } from './workers/notificationWorker.js'
 
 const mainApp = new Hono()
 
-const allowedOrigins = config.CORS_ORIGINS.split(',').map(o => o.trim());
+const allowedOrigins = config.CORS_ORIGINS.split(',').map((o: string) => o.trim());
 mainApp.use('/*', cors({
   origin: allowedOrigins.includes('*') ? '*' : allowedOrigins,
 }))

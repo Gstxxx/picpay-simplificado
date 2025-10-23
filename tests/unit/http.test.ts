@@ -19,7 +19,7 @@ describe('Resilient HTTP Client', () => {
       json: async () => ({ status: 'success' }),
     } as Response);
 
-    const response = await fetchWithResilience('https:
+    const response = await fetchWithResilience('https://example.com', {
       method: 'GET',
       timeoutMs: 2000,
       retries: 0,
@@ -39,11 +39,11 @@ describe('Resilient HTTP Client', () => {
         json: async () => ({ status: 'success' }),
       } as Response);
 
-    const response = await fetchWithResilience('https:
+    const response = await fetchWithResilience('https://example.com', {
       method: 'GET',
       timeoutMs: 2000,
       retries: 3,
-      retryDelayBaseMs: 1, 
+      retryDelayBaseMs: 1,
     });
 
     expect(response.ok).toBe(true);
@@ -54,7 +54,7 @@ describe('Resilient HTTP Client', () => {
     global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
 
     await expect(
-      fetchWithResilience('https:
+      fetchWithResilience('https://example.com', {
         method: 'GET',
         timeoutMs: 2000,
         retries: 2,
@@ -62,7 +62,7 @@ describe('Resilient HTTP Client', () => {
       })
     ).rejects.toThrow();
 
-    expect(global.fetch).toHaveBeenCalledTimes(3); 
+    expect(global.fetch).toHaveBeenCalledTimes(3);
   });
 });
 
