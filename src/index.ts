@@ -1,15 +1,20 @@
 import { serve } from '@hono/node-server'
 import { Hono } from 'hono'
+import { logger } from 'hono/logger'
+import { cors } from 'hono/cors'
+import { authApp } from './routes/auth/index.js'
+import { transactionsApp } from './routes/transactions/index.js'
+const mainApp = new Hono()
 
-const app = new Hono()
+mainApp.use('/*', cors()).use(logger()).basePath('/api/v1')
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
+const routes = mainApp.route('/', authApp).route('/', transactionsApp)
+
+export type AppType = typeof routes
+const port = 3005
+console.log(`Server is running on port ${port}`)
 
 serve({
-  fetch: app.fetch,
-  port: 3000
-}, (info) => {
-  console.log(`Server is running on http://localhost:${info.port}`)
+  fetch: mainApp.fetch,
+  port,
 })

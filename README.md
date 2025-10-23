@@ -77,12 +77,14 @@ um papo a respeito do que faltou.
 ## O que será avaliado e valorizamos :heart:
 
 Habilidades básicas de criação de projetos backend:
+
 - Conhecimentos sobre REST
 - Uso do Git
 - Capacidade analítica
 - Apresentação de código limpo e organizado
 
 Conhecimentos intermediários de construção de projetos manuteníveis:
+
 - Aderência a recomendações de implementação como as PSRs
 - Aplicação e conhecimentos de SOLID
 - Identificação e aplicação de Design Patterns
@@ -94,6 +96,7 @@ Conhecimentos intermediários de construção de projetos manuteníveis:
 - Boas noções de bancos de dados relacionais
 
 Aptidões para criar e manter aplicações de alta qualidade:
+
 - Aplicação de conhecimentos de observabilidade
 - Utlização de CI para rodar testes e análises estáticas
 - Conhecimentos sobre bancos de dados não-relacionais
@@ -111,6 +114,7 @@ seguir as boas práticas da comunidade.
 
 Uma sugestão para revisar a qualidade do seu código é usar ferramentas como o PHPMD antes de submeter o seu teste.
 O comando a seguir pode ser usado para rodar o PHPMD no seu projeto localmente, por exemplo:
+
 ```bash
 docker run -it --rm -v $(pwd):/project -w /project jakzal/phpqa phpmd app text cleancode,codesize,controversial,design,naming,unusedcode
 ```

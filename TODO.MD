@@ -1,0 +1,44 @@
+## TODO
+
+- [ ] Definir estratégia única de IDs (Int autoincrement vs UUID) e padronizar API/DB/código
+- [ ] Alinhar `zTransferSchema` para tipos de `payer`/`payee` conforme DB (e remover conversões ad hoc)
+- [ ] Padronizar dinheiro em centavos (Int) em toda a stack; validar e converter no handler
+- [ ] Corrigir comparação de saldo vs valor considerando centavos (sem float)
+- [ ] Evitar auto‑transferência (payer == payee)
+- [ ] Corrigir lógica do autorizador externo (usar OR: status != success OU authorization != true)
+- [ ] Tratar HTTP status do autorizador (falhas != 2xx) antes de confiar no body
+- [ ] Adicionar timeout, retry com backoff e circuit breaker para chamadas externas
+- [ ] Garantir atomicidade com checagem de saldo dentro da transação (evitar corrida)
+- [ ] Implementar update condicional (ex.: decremento somente se saldo >= valor) para concorrência
+- [ ] Mover notificação para mecanismo confiável (Outbox/queue + worker com retry)
+- [ ] Tornar transação idempotente (header Idempotency-Key) para evitar duplicidade
+- [ ] Proteger `/transactions/*` com auth middleware (JWT) e escopo/claims
+- [ ] Usar 401 para credenciais inválidas (em vez de 404) no login
+- [ ] Implementar fluxo de refresh token (persistência/rotação/blacklist) OU remover emissão
+- [ ] Validar/env vars com schema (zod) e falhar no boot se estiver faltando
+- [ ] Centralizar config (`config.ts`) e remover leituras diretas de `process.env` em rotas
+- [ ] Substituir strings por Enums no Prisma (documentType, status de transação)
+- [ ] Criar FKs e relações em `Transaction` (payerId/payeeId referenciando `User`), com índices
+- [ ] Acrescentar índices: `User.email`, `User.documentNumber`, `Transaction.createdAt`
+- [ ] Revisar cadastro: unificar `cpf`/`cnpj` em `documentNumber` (sem duplicidade), validar por `documentType`
+- [ ] Ajustar schema de registro para não exigir `cpf` quando `MERCHANT` (CNPJ)
+- [ ] Sanitizar e normalizar inputs (trim, lowercase de email)
+- [ ] Adicionar rate limiting (login e transfer) e proteção contra brute force
+- [ ] Restringir CORS para origens conhecidas; adicionar security headers
+- [ ] Logging estruturado (pino), correlação (request id) e redaction de dados sensíveis
+- [ ] Middleware global de erro com mapeamento consistente de códigos e mensagens
+- [ ] Expor métricas/healthcheck (Prometheus + `/healthz`/`/readyz`)
+- [ ] Extrair regras de negócio para services/repositories (rotas finas)
+- [ ] Adicionar documentação OpenAPI/Swagger e exemplos
+- [ ] Dockerizar (Dockerfile + docker-compose com Postgres) e variáveis via `.env`
+- [ ] Migrar do SQLite para Postgres em prod/dev; scripts de migração/seeds (usuários de exemplo)
+- [ ] Scripts NPM para dev/build/test/migrate/seed; `tsconfig` com `strict: true`
+- [ ] Testes unitários (auth, validações, serviços) e integração (transferência completa)
+- [ ] Mocks/contract tests para serviços externos (nock/msw) com casos de falha/intermitência
+- [ ] Pipeline CI (GitHub Actions) rodando lint, testes, checagem de tipos e build
+- [ ] Linting consistente (ESLint/Prettier) e hooks (Husky) opcionais
+- [ ] Remover código morto (ex.: `getConnInfo` não utilizado)
+- [ ] Respostas HTTP consistentes (usar `c.status(...); return c.json(...)`)
+- [ ] Documentar README com setup, ambiente, decisões técnicas e trade-offs
+
+
