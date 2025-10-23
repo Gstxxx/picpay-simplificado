@@ -102,6 +102,7 @@ Login and receive JWT token.
 ```
 
 Response:
+
 ```json
 {
   "token": "eyJhbGc...",
@@ -126,6 +127,7 @@ Transfer money between users. Requires `Authorization: Bearer <token>` header.
 **Note**: `value` is in cents (integer). Example: 10000 = R$ 100.00
 
 Optional header for idempotency:
+
 ```
 Idempotency-Key: unique-request-id
 ```
@@ -156,6 +158,7 @@ Idempotency-Key: unique-request-id
 ### External Service Resiliency
 
 Custom HTTP client (`src/lib/http.ts`) with:
+
 - **Timeout**: 2s for authorizer, 3s for notifications
 - **Retries**: Exponential backoff (3 attempts for auth, 2 for notify)
 - **Circuit Breaker**: Opens after 5 consecutive failures, cools down after 10s
@@ -163,6 +166,7 @@ Custom HTTP client (`src/lib/http.ts`) with:
 ### Notification Reliability
 
 **Outbox Pattern**:
+
 1. Transfer transaction inserts notification into `NotificationOutbox` table
 2. Background worker polls pending notifications every 5s
 3. Retries up to 5 times with exponential backoff
@@ -233,6 +237,7 @@ prisma/
 Schema is Postgres-ready. To migrate:
 
 1. Update `datasource` in `prisma/schema.prisma`:
+
 ```prisma
 datasource db {
   provider = "postgresql"
@@ -241,11 +246,13 @@ datasource db {
 ```
 
 2. Update `.env`:
+
 ```env
 DATABASE_URL="postgresql://user:password@localhost:5432/picpay"
 ```
 
 3. Run migrations:
+
 ```bash
 npm run db:migrate
 ```
@@ -272,6 +279,7 @@ npm run db:migrate
 ## 📝 Testing
 
 Tests are placeholders. Add:
+
 - Unit tests: auth logic, validation, services
 - Integration tests: full transfer flow
 - External service mocks: use `nock` or `msw`
@@ -284,6 +292,7 @@ MIT
 ## 🤝 Contributing
 
 This is a technical challenge project. For production use, consider:
+
 - Adding comprehensive tests
 - Implementing proper logging (structured with correlation IDs)
 - Adding observability (metrics, tracing)

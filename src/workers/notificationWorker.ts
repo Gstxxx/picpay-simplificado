@@ -72,7 +72,7 @@ export function startNotificationWorker() {
   if (workerInterval) return;
   console.log('Starting notification worker...');
   workerInterval = setInterval(processPendingNotifications, POLL_INTERVAL_MS);
-  processPendingNotifications(); 
+  processPendingNotifications();
 }
 
 export function stopNotificationWorker() {
@@ -82,4 +82,3 @@ export function stopNotificationWorker() {
     console.log('Notification worker stopped.');
   }
 }
-

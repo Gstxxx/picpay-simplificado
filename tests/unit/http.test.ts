@@ -65,4 +65,3 @@ describe('Resilient HTTP Client', () => {
     expect(global.fetch).toHaveBeenCalledTimes(3);
   });
 });
-

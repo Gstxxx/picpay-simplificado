@@ -17,4 +17,3 @@ healthApp.get('/readyz', async (c) => {
 });
 
 export { healthApp };
-

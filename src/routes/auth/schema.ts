@@ -1,26 +1,26 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
-const emailSchema = z.string().email('Invalid email format')
+const emailSchema = z.string().email('Invalid email format');
 
-const cpfSchema = z.string().regex(/^\d{11}$/, 'CPF must contain exactly 11 digits')
-const cnpjSchema = z.string().regex(/^\d{14}$/, 'CNPJ must contain exactly 14 digits')
+const cpfSchema = z.string().regex(/^\d{11}$/, 'CPF must contain exactly 11 digits');
+const cnpjSchema = z.string().regex(/^\d{14}$/, 'CNPJ must contain exactly 14 digits');
 const documentNumberSchema = z.union([cpfSchema, cnpjSchema], {
   errorMap: () => ({ message: 'Must be a valid CPF or CNPJ' }),
-})
+});
 
 const passwordSchema = z
   .string()
   .min(8, 'Password must be at least 8 characters')
   .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
   .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-  .regex(/[0-9]/, 'Password must contain at least one number')
+  .regex(/[0-9]/, 'Password must contain at least one number');
 
 const zLoginSchema = z.object({
   email: z.union([emailSchema, documentNumberSchema], {
     errorMap: () => ({ message: 'Must be a valid email, CPF, or CNPJ' }),
   }),
   password: z.string().min(1, 'Password is required'),
-})
+});
 
 const zRegisterSchema = z
   .object({
@@ -36,24 +36,24 @@ const zRegisterSchema = z
     }),
     documentNumber: documentNumberSchema,
   })
-  .refine(data => data.password === data.confirmPassword, {
+  .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
     path: ['confirmPassword'],
   })
   .refine(
-    data => {
+    (data) => {
       if (data.documentType === 'COMMON') {
-        return /^\d{11}$/.test(data.documentNumber)
+        return /^\d{11}$/.test(data.documentNumber);
       }
       if (data.documentType === 'MERCHANT') {
-        return /^\d{14}$/.test(data.documentNumber)
+        return /^\d{14}$/.test(data.documentNumber);
       }
-      return true
+      return true;
     },
     {
       message: 'COMMON must provide CPF (11d); MERCHANT must provide CNPJ (14d)',
       path: ['documentNumber'],
     }
-  )
+  );
 
-export { zLoginSchema, zRegisterSchema }
+export { zLoginSchema, zRegisterSchema };

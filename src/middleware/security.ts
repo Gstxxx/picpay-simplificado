@@ -8,4 +8,3 @@ export async function securityHeaders(c: Context, next: Next) {
   c.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   c.header('Referrer-Policy', 'strict-origin-when-cross-origin');
 }
-

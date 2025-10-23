@@ -67,4 +67,3 @@ afterAll(async () => {
 });
 
 export { prisma };
-

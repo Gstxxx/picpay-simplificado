@@ -9,7 +9,7 @@ describe('Transfer Schema Validation', () => {
       payee: '123e4567-e89b-12d3-a456-426614174001',
       value: 10000,
     };
-    
+
     const result = zTransferSchema.safeParse(validData);
     expect(result.success).toBe(true);
   });
@@ -20,7 +20,7 @@ describe('Transfer Schema Validation', () => {
       payee: '123e4567-e89b-12d3-a456-426614174001',
       value: 10000,
     };
-    
+
     const result = zTransferSchema.safeParse(invalidData);
     expect(result.success).toBe(false);
   });
@@ -31,7 +31,7 @@ describe('Transfer Schema Validation', () => {
       payee: '123e4567-e89b-12d3-a456-426614174001',
       value: -100,
     };
-    
+
     const result = zTransferSchema.safeParse(invalidData);
     expect(result.success).toBe(false);
   });
@@ -40,9 +40,9 @@ describe('Transfer Schema Validation', () => {
     const invalidData = {
       payer: '123e4567-e89b-12d3-a456-426614174000',
       payee: '123e4567-e89b-12d3-a456-426614174001',
-      value: 100.50,
+      value: 100.5,
     };
-    
+
     const result = zTransferSchema.safeParse(invalidData);
     expect(result.success).toBe(false);
   });
@@ -54,7 +54,7 @@ describe('Login Schema Validation', () => {
       email: 'user@example.com',
       password: 'password123',
     };
-    
+
     const result = zLoginSchema.safeParse(validData);
     expect(result.success).toBe(true);
   });
@@ -64,7 +64,7 @@ describe('Login Schema Validation', () => {
       email: '12345678901',
       password: 'password123',
     };
-    
+
     const result = zLoginSchema.safeParse(validData);
     expect(result.success).toBe(true);
   });
@@ -74,7 +74,7 @@ describe('Login Schema Validation', () => {
       email: 'not-an-email',
       password: 'password123',
     };
-    
+
     const result = zLoginSchema.safeParse(invalidData);
     expect(result.success).toBe(false);
   });
@@ -90,7 +90,7 @@ describe('Register Schema Validation', () => {
       documentType: 'COMMON' as const,
       documentNumber: '12345678901',
     };
-    
+
     const result = zRegisterSchema.safeParse(validData);
     expect(result.success).toBe(true);
   });
@@ -104,7 +104,7 @@ describe('Register Schema Validation', () => {
       documentType: 'MERCHANT' as const,
       documentNumber: '12345678901234',
     };
-    
+
     const result = zRegisterSchema.safeParse(validData);
     expect(result.success).toBe(true);
   });
@@ -118,7 +118,7 @@ describe('Register Schema Validation', () => {
       documentType: 'COMMON' as const,
       documentNumber: '12345678901',
     };
-    
+
     const result = zRegisterSchema.safeParse(invalidData);
     expect(result.success).toBe(false);
   });
@@ -132,7 +132,7 @@ describe('Register Schema Validation', () => {
       documentType: 'COMMON' as const,
       documentNumber: '12345678901',
     };
-    
+
     const result = zRegisterSchema.safeParse(invalidData);
     expect(result.success).toBe(false);
   });
@@ -144,9 +144,9 @@ describe('Register Schema Validation', () => {
       confirmPassword: 'SecurePass123',
       name: 'John Doe',
       documentType: 'COMMON' as const,
-      documentNumber: '12345678901234', 
+      documentNumber: '12345678901234',
     };
-    
+
     const result = zRegisterSchema.safeParse(invalidData);
     expect(result.success).toBe(false);
   });
@@ -158,11 +158,10 @@ describe('Register Schema Validation', () => {
       confirmPassword: 'SecurePass123',
       name: 'Acme Corp',
       documentType: 'MERCHANT' as const,
-      documentNumber: '12345678901', 
+      documentNumber: '12345678901',
     };
-    
+
     const result = zRegisterSchema.safeParse(invalidData);
     expect(result.success).toBe(false);
   });
 });
-
