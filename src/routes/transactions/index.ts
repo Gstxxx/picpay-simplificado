@@ -18,7 +18,7 @@ const transactionsApp = new Hono()
       const value = data.value;
       const idempotencyKey = c.req.header('Idempotency-Key');
 
-      // Check for existing transaction with this idempotency key
+      
       if (idempotencyKey) {
         const existing = await prisma.transaction.findUnique({
           where: { idempotencyKey },
@@ -105,7 +105,7 @@ const transactionsApp = new Hono()
           },
         });
 
-        // Add notification to outbox for reliable delivery
+        
         await tx.notificationOutbox.create({
           data: {
             email: payee.email,

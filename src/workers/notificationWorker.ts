@@ -3,7 +3,7 @@ import { fetchWithResilience } from '../lib/http.js';
 
 const POLL_INTERVAL_MS = 5000;
 const MAX_ATTEMPTS = 5;
-const NOTIFY_URL = process.env.NOTIFY_URL || 'https://util.devi.tools/api/v1/notify';
+const NOTIFY_URL = process.env.NOTIFY_URL || 'https:
 
 async function processPendingNotifications() {
   try {
@@ -72,7 +72,7 @@ export function startNotificationWorker() {
   if (workerInterval) return;
   console.log('Starting notification worker...');
   workerInterval = setInterval(processPendingNotifications, POLL_INTERVAL_MS);
-  processPendingNotifications(); // immediate first run
+  processPendingNotifications(); 
 }
 
 export function stopNotificationWorker() {
