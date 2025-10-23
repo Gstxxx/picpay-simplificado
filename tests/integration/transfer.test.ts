@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Hono } from 'hono';
 import { sign } from 'hono/jwt';
 import nock from 'nock';
@@ -14,7 +14,7 @@ describe('Transfer Integration Tests', () => {
   let merchantId: string;
 
   beforeEach(async () => {
-    
+
     const payer = await prisma.user.create({
       data: {
         email: 'payer@example.com',
@@ -22,12 +22,12 @@ describe('Transfer Integration Tests', () => {
         name: 'Payer User',
         documentType: 'COMMON',
         documentNumber: '11111111111',
-        balance: 50000, 
+        balance: 50000,
       },
     });
     payerId = payer.id;
 
-    
+
     const payee = await prisma.user.create({
       data: {
         email: 'payee@example.com',
@@ -35,12 +35,12 @@ describe('Transfer Integration Tests', () => {
         name: 'Payee User',
         documentType: 'COMMON',
         documentNumber: '22222222222',
-        balance: 10000, 
+        balance: 10000,
       },
     });
     payeeId = payee.id;
 
-    
+
     const merchant = await prisma.user.create({
       data: {
         email: 'merchant@example.com',
@@ -53,7 +53,7 @@ describe('Transfer Integration Tests', () => {
     });
     merchantId = merchant.id;
 
-    
+
     payerToken = await sign(
       {
         sub: payerId,
@@ -63,7 +63,7 @@ describe('Transfer Integration Tests', () => {
       config.JWT_SECRET
     );
 
-    
+
     nock('https://util.devi.tools')
       .get('/api/v2/authorize')
       .reply(200, { status: 'success', data: { authorization: true } })
@@ -79,7 +79,7 @@ describe('Transfer Integration Tests', () => {
       const transferData = {
         payer: payerId,
         payee: payeeId,
-        value: 10000, 
+        value: 10000,
       };
 
       const response = await app.request('/transactions/transfer', {
@@ -97,13 +97,13 @@ describe('Transfer Integration Tests', () => {
       expect(data.transaction).toBeDefined();
       expect(data.transaction.value).toBe(10000);
 
-      
+
       const updatedPayer = await prisma.user.findUnique({ where: { id: payerId } });
       const updatedPayee = await prisma.user.findUnique({ where: { id: payeeId } });
-      expect(updatedPayer?.balance).toBe(40000); 
-      expect(updatedPayee?.balance).toBe(20000); 
+      expect(updatedPayer?.balance).toBe(40000);
+      expect(updatedPayee?.balance).toBe(20000);
 
-      
+
       const notification = await prisma.notificationOutbox.findFirst({
         where: { email: 'payee@example.com' },
       });
@@ -152,7 +152,7 @@ describe('Transfer Integration Tests', () => {
       const transferData = {
         payer: payerId,
         payee: payeeId,
-        value: 100000, 
+        value: 100000,
       };
 
       const response = await app.request('/transactions/transfer', {
@@ -168,7 +168,7 @@ describe('Transfer Integration Tests', () => {
       const data = await response.json();
       expect(data.error).toContain('Insufficient balance');
 
-      
+
       const payer = await prisma.user.findUnique({ where: { id: payerId } });
       expect(payer?.balance).toBe(50000);
     });
@@ -183,7 +183,7 @@ describe('Transfer Integration Tests', () => {
         config.JWT_SECRET
       );
 
-      
+
       await prisma.user.update({
         where: { id: merchantId },
         data: { balance: 50000 },
@@ -236,6 +236,8 @@ describe('Transfer Integration Tests', () => {
     });
 
     it('should handle authorization service unavailable', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+
       nock.cleanAll();
       nock('https://util.devi.tools')
         .get('/api/v2/authorize')
@@ -257,6 +259,13 @@ describe('Transfer Integration Tests', () => {
       });
 
       expect(response.status).toBe(503);
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Authorization service error'),
+        expect.any(Error)
+      );
+
+      consoleErrorSpy.mockRestore();
     });
 
     it('should support idempotency', async () => {
@@ -267,7 +276,7 @@ describe('Transfer Integration Tests', () => {
         value: 10000,
       };
 
-      
+
       const response1 = await app.request('/transactions/transfer', {
         method: 'POST',
         headers: {
@@ -282,7 +291,7 @@ describe('Transfer Integration Tests', () => {
       const data1 = await response1.json();
       const transactionId = data1.transaction.id;
 
-      
+
       const response2 = await app.request('/transactions/transfer', {
         method: 'POST',
         headers: {
@@ -297,11 +306,11 @@ describe('Transfer Integration Tests', () => {
       const data2 = await response2.json();
       expect(data2.transaction.id).toBe(transactionId);
 
-      
-      const payer = await prisma.user.findUnique({ where: { id: payerId } });
-      expect(payer?.balance).toBe(40000); 
 
-      
+      const payer = await prisma.user.findUnique({ where: { id: payerId } });
+      expect(payer?.balance).toBe(40000);
+
+
       const transactions = await prisma.transaction.findMany({
         where: { idempotencyKey },
       });
