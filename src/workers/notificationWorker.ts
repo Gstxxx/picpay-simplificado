@@ -3,7 +3,7 @@ import { fetchWithResilience } from '../lib/http.js';
 
 const POLL_INTERVAL_MS = 5000;
 const MAX_ATTEMPTS = 5;
-const NOTIFY_URL = process.env.NOTIFY_URL || 'https:
+const NOTIFY_URL = process.env.NOTIFY_URL || 'https://util.devi.tools/api/v1/notify';
 
 async function processPendingNotifications() {
   try {

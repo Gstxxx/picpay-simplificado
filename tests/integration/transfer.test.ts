@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { Hono } from 'hono';
 import { sign } from 'hono/jwt';
 import nock from 'nock';
@@ -64,7 +64,7 @@ describe('Transfer Integration Tests', () => {
     );
 
     
-    nock('https:
+    nock('https://util.devi.tools')
       .get('/api/v2/authorize')
       .reply(200, { status: 'success', data: { authorization: true } })
       .persist();
@@ -211,7 +211,7 @@ describe('Transfer Integration Tests', () => {
 
     it('should reject transfer when authorization service denies', async () => {
       nock.cleanAll();
-      nock('https:
+      nock('https://util.devi.tools')
         .get('/api/v2/authorize')
         .reply(200, { status: 'fail', data: { authorization: false } });
 
@@ -237,7 +237,9 @@ describe('Transfer Integration Tests', () => {
 
     it('should handle authorization service unavailable', async () => {
       nock.cleanAll();
-      nock('https:
+      nock('https://util.devi.tools')
+        .get('/api/v2/authorize')
+        .replyWithError('Service unavailable');
 
       const transferData = {
         payer: payerId,
