@@ -1,7 +1,7 @@
 ## TODO
 
-- [ ] Definir estratégia única de IDs (Int autoincrement vs UUID) e padronizar API/DB/código
-- [ ] Alinhar `zTransferSchema` para tipos de `payer`/`payee` conforme DB (e remover conversões ad hoc)
+- [X] Definir estratégia única de IDs (Int autoincrement vs UUID) e padronizar API/DB/código
+- [X] Alinhar `zTransferSchema` para tipos de `payer`/`payee` conforme DB (e remover conversões ad hoc)
 - [ ] Padronizar dinheiro em centavos (Int) em toda a stack; validar e converter no handler
 - [ ] Corrigir comparação de saldo vs valor considerando centavos (sem float)
 - [ ] Evitar auto‑transferência (payer == payee)

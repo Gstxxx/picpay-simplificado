@@ -4,8 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { sign } from "hono/jwt";
 import prisma from '../../lib/prisma.js';
 import { zLoginSchema, zRegisterSchema } from './schema.js';
-
-const JWT_SECRET = process.env.JWT_SECRET;
+import { config } from '../../config.js';
 
 const authApp = new Hono()
   .basePath("/auth")
@@ -36,13 +35,7 @@ const authApp = new Hono()
         role: user.documentType,
         exp: Math.floor(Date.now() / 1000) + 60 * 15,
       };
-      if (!JWT_SECRET) {
-        return c.json(
-          { error: "Missing JWT_SECRET environment variable" },
-          500,
-        );
-      }
-      const token = await sign(payload, JWT_SECRET);
+      const token = await sign(payload, config.JWT_SECRET);
 
       const { password: _, ...userWithoutPassword } = user;
 
@@ -86,7 +79,6 @@ const authApp = new Hono()
           name: data.name,
           documentType: data.documentType,
           documentNumber: data.documentNumber,
-          cpf: data.cpf,
         },
       });
 

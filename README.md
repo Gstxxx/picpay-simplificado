@@ -1,155 +1,292 @@
-# Desafio Back-end PicPay
+# PicPay Simplificado
 
-### Sobre o ambiente da aplicação:
+A simplified payment platform API built with TypeScript, Hono, and Prisma.
 
-- Escolha qualquer framework que se sinta **confortável** em trabalhar. Esse teste **não faz** nenhuma preferência,
-  portanto decida por aquele com o qual estará mais seguro em apresentar e conversar com a gente na entrevista ;)
+## 🚀 Features
 
-- Você pode, inclusive, não optar por framework nenhum. Neste caso, recomendamos a implementação do serviço via script
-  para diminuir a sobrecarga de criar um servidor web;
+- **User Authentication**: JWT-based auth with secure password hashing (bcrypt)
+- **Transfer System**: Money transfers between users with comprehensive validation
+- **Idempotency**: Duplicate request protection via `Idempotency-Key` header
+- **Resilient External Services**: Timeout, retry, exponential backoff, and circuit breaker
+- **Notification System**: Reliable notification delivery via outbox pattern with background worker
+- **Security**: Rate limiting, CORS, security headers, JWT middleware
+- **Observability**: Health checks (`/healthz`, `/readyz`), structured logging
+- **Type Safety**: Full TypeScript with strict mode enabled
+- **Database**: SQLite (dev) with Prisma ORM, Postgres-ready schema
 
-- Ainda assim, se optar por um framework tente evitar usar muito métodos mágicos ou atalhos já prontos. Sabemos que
-  essas facilidades aumentam a produtividade no dia-a-dia mas aqui queremos ver o **seu** código e a sua forma de
-  resolver problemas;
+## 📋 Requirements
 
-> Valorizamos uma boa estrutura de containeres criada por você.
+- Node.js 20+
+- npm or yarn
 
-## Objetivo: PicPay Simplificado
+## 🛠️ Setup
 
-O PicPay Simplificado é uma plataforma de pagamentos simplificada. Nela é possível depositar e realizar transferências
-de dinheiro entre usuários. Temos 2 tipos de usuários, os comuns e lojistas, ambos têm carteira com dinheiro e realizam
-transferências entre eles.
+1. **Clone the repository**
 
-### Requisitos
+```bash
+git clone <repository-url>
+cd picpay-simplificado
+```
 
-A seguir estão algumas regras de negócio que são importantes para o funcionamento do PicPay Simplificado:
+2. **Install dependencies**
 
-- Para ambos tipos de usuário, precisamos do `Nome Completo`, `CPF`, `e-mail` e `Senha`. CPF/CNPJ e e-mails devem ser
-  únicos no sistema. Sendo assim, seu sistema deve permitir apenas um cadastro com o mesmo CPF ou endereço de e-mail;
+```bash
+npm install
+```
 
-- Usuários podem enviar dinheiro (efetuar transferência) para lojistas e entre usuários;
+3. **Configure environment**
 
-- Lojistas **só recebem** transferências, não enviam dinheiro para ninguém;
+Create a `.env` file (or copy from `.env.example`):
 
-- Validar se o usuário tem saldo antes da transferência;
+```env
+NODE_ENV=development
+PORT=3005
+DATABASE_URL="file:./dev.db"
+JWT_SECRET=your-super-secret-jwt-key-min-32-chars-long-change-in-production
+AUTH_URL=https://util.devi.tools/api/v2/authorize
+NOTIFY_URL=https://util.devi.tools/api/v1/notify
+CORS_ORIGINS=*
+```
 
-- Antes de finalizar a transferência, deve-se consultar um serviço autorizador externo, use este mock
-  [https://util.devi.tools/api/v2/authorize](https://util.devi.tools/api/v2/authorize) para simular o serviço
-  utilizando o verbo `GET`;
+4. **Initialize database**
 
-- A operação de transferência deve ser uma transação (ou seja, revertida em qualquer caso de inconsistência) e o
-  dinheiro deve voltar para a carteira do usuário que envia;
+```bash
+npm run db:push
+npm run db:generate
+```
 
-- No recebimento de pagamento, o usuário ou lojista precisa receber notificação (envio de email, sms) enviada por um
-  serviço de terceiro e eventualmente este serviço pode estar indisponível/instável. Use este mock
-  [https://util.devi.tools/api/v1/notify)](https://util.devi.tools/api/v1/notify)) para simular o envio da notificação
-  utilizando o verbo `POST`;
+5. **Start development server**
 
-- Este serviço deve ser RESTFul.
+```bash
+npm run dev
+```
 
-> Tente ser o mais aderente possível ao que foi pedido, mas não se preocupe se não conseguir atender a todos os
-> requisitos. Durante a entrevista vamos conversar sobre o que você conseguiu fazer e o que não conseguiu.
+Server runs at `http://localhost:3005`
 
-### Endpoint de transferência
+## 📚 API Documentation
 
-Você pode implementar o que achar conveniente, porém vamos nos atentar **somente** ao fluxo de transferência entre dois
-usuários. A implementação deve seguir o contrato abaixo.
+### Base URL
 
-```http request
-POST /transfer
-Content-Type: application/json
+```
+http://localhost:3005/api/v1
+```
 
+### Endpoints
+
+#### Authentication
+
+**POST /api/v1/auth/register**
+
+Register a new user.
+
+```json
 {
-  "value": 100.0,
-  "payer": 4,
-  "payee": 15
+  "email": "user@example.com",
+  "password": "SecurePass123",
+  "confirmPassword": "SecurePass123",
+  "name": "John Doe",
+  "documentType": "COMMON",
+  "documentNumber": "12345678901"
 }
 ```
 
-Caso ache interessante, faça uma **proposta** de endpoint e apresente para os entrevistadores :heart:
+**POST /api/v1/auth/login**
 
-# Avaliação
+Login and receive JWT token.
 
-Apresente sua solução utilizando o framework que você desejar, justificando a escolha.
-Atente-se a cumprir a maioria dos requisitos, pois você pode cumprir-los parcialmente e durante a avaliação vamos bater
-um papo a respeito do que faltou.
-
-## O que será avaliado e valorizamos :heart:
-
-Habilidades básicas de criação de projetos backend:
-
-- Conhecimentos sobre REST
-- Uso do Git
-- Capacidade analítica
-- Apresentação de código limpo e organizado
-
-Conhecimentos intermediários de construção de projetos manuteníveis:
-
-- Aderência a recomendações de implementação como as PSRs
-- Aplicação e conhecimentos de SOLID
-- Identificação e aplicação de Design Patterns
-- Noções de funcionamento e uso de Cache
-- Conhecimentos sobre conceitos de containers (Docker, Podman etc)
-- Documentação e descrição de funcionalidades e manuseio do projeto
-- Implementação e conhecimentos sobre testes de unidade e integração
-- Identificar e propor melhorias
-- Boas noções de bancos de dados relacionais
-
-Aptidões para criar e manter aplicações de alta qualidade:
-
-- Aplicação de conhecimentos de observabilidade
-- Utlização de CI para rodar testes e análises estáticas
-- Conhecimentos sobre bancos de dados não-relacionais
-- Aplicação de arquiteturas (CQRS, Event-sourcing, Microsserviços, Monolito modular)
-- Uso e implementação de mensageria
-- Noções de escalabilidade
-- Boas habilidades na aplicação do conhecimento do negócio no software
-- Implementação margeada por ferramentas de qualidade (análise estática, PHPMD, PHPStan, PHP-CS-Fixer etc)
-- Noções de PHP assíncrono
-
-### Boas práticas
-
-Caso use PHP tente seguir as [PSRs](https://www.php-fig.org/psr/psr-12/), caso use outro framework ou linguagem, tente
-seguir as boas práticas da comunidade.
-
-Uma sugestão para revisar a qualidade do seu código é usar ferramentas como o PHPMD antes de submeter o seu teste.
-O comando a seguir pode ser usado para rodar o PHPMD no seu projeto localmente, por exemplo:
-
-```bash
-docker run -it --rm -v $(pwd):/project -w /project jakzal/phpqa phpmd app text cleancode,codesize,controversial,design,naming,unusedcode
+```json
+{
+  "email": "user@example.com",
+  "password": "SecurePass123"
+}
 ```
 
-## O que NÃO será avaliado :warning:
+Response:
+```json
+{
+  "token": "eyJhbGc...",
+  "user": { "id": "...", "email": "...", "name": "..." }
+}
+```
 
-- Fluxo de cadastro de usuários e lojistas
-- Frontend (só avaliaremos a (API Restful)[https://www.devmedia.com.br/rest-tutorial/28912])
-- Autenticação
+#### Transactions
 
-## O que será um Diferencial
+**POST /api/v1/transactions/transfer** (Protected)
 
-- Uso de Docker
-- Uma cobertura de testes consistente
-- Uso de Design Patterns
-- Documentação
-- Proposta de melhoria na arquitetura
-- Ser consistente e saber argumentar suas escolhas
-- Apresentar soluções que domina
-- Modelagem de Dados
-- Manutenibilidade do Código
-- Tratamento de erros
-- Cuidado com itens de segurança
-- Arquitetura (estruturar o pensamento antes de escrever)
-- Carinho em desacoplar componentes (outras camadas, service, repository)
+Transfer money between users. Requires `Authorization: Bearer <token>` header.
 
-## Materiais úteis
+```json
+{
+  "payer": "uuid-of-payer",
+  "payee": "uuid-of-payee",
+  "value": 10000
+}
+```
 
-- https://picpay.com/site/sobre-nos
-- https://hub.packtpub.com/why-we-need-design-patterns/
-- https://refactoring.guru/
-- http://br.phptherightway.com/
-- https://www.php-fig.org/psr/psr-12/
-- https://www.atlassian.com/continuous-delivery/software-testing/types-of-software-testing
-- https://github.com/exakat/php-static-analysis-tools
-- https://martinfowler.com/articles/microservices.html
-- https://docs.guzzlephp.org/en/stable/request-options.html
-- https://www.devmedia.com.br/rest-tutorial/28912
+**Note**: `value` is in cents (integer). Example: 10000 = R$ 100.00
+
+Optional header for idempotency:
+```
+Idempotency-Key: unique-request-id
+```
+
+#### Health
+
+**GET /api/v1/healthz** - Liveness probe  
+**GET /api/v1/readyz** - Readiness probe (checks DB connection)
+
+## 🏗️ Architecture & Design Decisions
+
+### ID Strategy
+
+- **UUIDs** for all primary keys (User, Transaction, NotificationOutbox)
+- Compatible with distributed systems and easy migration to Postgres
+
+### Money Representation
+
+- All monetary values stored as **integers (cents)** to avoid floating-point precision issues
+- API accepts and returns integers
+
+### Concurrency & Race Conditions
+
+- **Atomic balance check**: `updateMany` with `where: { balance: { gte: value } }` ensures safe decrement
+- Prisma transactions wrap balance updates and transaction creation
+- Idempotency prevents duplicate transfers
+
+### External Service Resiliency
+
+Custom HTTP client (`src/lib/http.ts`) with:
+- **Timeout**: 2s for authorizer, 3s for notifications
+- **Retries**: Exponential backoff (3 attempts for auth, 2 for notify)
+- **Circuit Breaker**: Opens after 5 consecutive failures, cools down after 10s
+
+### Notification Reliability
+
+**Outbox Pattern**:
+1. Transfer transaction inserts notification into `NotificationOutbox` table
+2. Background worker polls pending notifications every 5s
+3. Retries up to 5 times with exponential backoff
+4. Marks as `SENT` or `FAILED` after max attempts
+
+### Security
+
+- **JWT Authentication**: 15-minute access tokens, no refresh for now
+- **Rate Limiting**: 5 req/min for login, 10 req/min for transfers
+- **Security Headers**: HSTS, X-Frame-Options, CSP-ready
+- **Password Hashing**: bcrypt with salt rounds 10
+- **CORS**: Configurable via `CORS_ORIGINS` env var
+
+### Validation
+
+- **Zod schemas** for all inputs
+- Document type validation (CPF 11 digits for COMMON, CNPJ 14 digits for MERCHANT)
+- Self-transfer prevention
+- Merchant send restriction
+
+## 🧪 Scripts
+
+```bash
+npm run dev          # Start dev server with watch mode
+npm run build        # Compile TypeScript to dist/
+npm start            # Run compiled production server
+npm run typecheck    # Type check without emitting
+npm run lint         # Check code formatting
+npm run format       # Auto-format code with Prettier
+npm run db:push      # Push schema changes to database
+npm run db:migrate   # Create and apply migrations
+npm run db:generate  # Regenerate Prisma Client
+npm run db:studio    # Open Prisma Studio GUI
+npm test             # Run tests (placeholder)
+```
+
+## 🗂️ Project Structure
+
+```
+src/
+├── config.ts                  # Environment validation & config
+├── index.ts                   # Server entry point
+├── lib/
+│   ├── http.ts               # Resilient HTTP client
+│   └── prisma.ts             # Prisma client singleton
+├── middleware/
+│   ├── auth.ts               # JWT authentication
+│   ├── errors.ts             # Global error handler
+│   ├── rateLimit.ts          # In-memory rate limiter
+│   └── security.ts           # Security headers
+├── routes/
+│   ├── auth/
+│   │   ├── index.ts          # Login & register handlers
+│   │   └── schema.ts         # Zod validation schemas
+│   ├── transactions/
+│   │   ├── index.ts          # Transfer handler
+│   │   └── schema.ts         # Transfer validation
+│   └── health/
+│       └── index.ts          # Health check endpoints
+└── workers/
+    └── notificationWorker.ts  # Background notification sender
+prisma/
+└── schema.prisma             # Database schema
+```
+
+## 🐳 Future: Docker & Postgres
+
+Schema is Postgres-ready. To migrate:
+
+1. Update `datasource` in `prisma/schema.prisma`:
+```prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+```
+
+2. Update `.env`:
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/picpay"
+```
+
+3. Run migrations:
+```bash
+npm run db:migrate
+```
+
+## 🔒 Security Considerations
+
+- Store `JWT_SECRET` securely (use secrets manager in production)
+- Use HTTPS in production
+- Restrict `CORS_ORIGINS` to known domains
+- Implement refresh token rotation if long-lived sessions needed
+- Add comprehensive audit logging
+- Consider rate limiting per user ID (not just IP)
+
+## 🚧 Known Limitations & Trade-offs
+
+- **In-memory rate limiter**: Lost on restart; use Redis for production
+- **SQLite**: Single-writer bottleneck; migrate to Postgres for scale
+- **No refresh tokens**: Simplifies implementation; add if needed
+- **Notification worker in-process**: Use queue (RabbitMQ/SQS) + separate worker for production
+- **String-based enums**: SQLite doesn't support native enums; Postgres would use proper enums
+- **No audit trail**: Consider event sourcing for compliance
+- **Basic circuit breaker**: Per-URL, in-memory; use Hystrix/resilience4j for advanced patterns
+
+## 📝 Testing
+
+Tests are placeholders. Add:
+- Unit tests: auth logic, validation, services
+- Integration tests: full transfer flow
+- External service mocks: use `nock` or `msw`
+- Contract tests for external APIs
+
+## 📜 License
+
+MIT
+
+## 🤝 Contributing
+
+This is a technical challenge project. For production use, consider:
+- Adding comprehensive tests
+- Implementing proper logging (structured with correlation IDs)
+- Adding observability (metrics, tracing)
+- Migrating to Postgres + queue system
+- Implementing proper secrets management
+- Adding API documentation (OpenAPI/Swagger)

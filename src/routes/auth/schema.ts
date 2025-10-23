@@ -2,14 +2,8 @@ import { z } from 'zod'
 
 const emailSchema = z.string().email('Invalid email format')
 
-const cpfSchema = z
-  .string()
-  .regex(/^\d{11}$/, 'CPF must contain exactly 11 digits')
-
-const cnpjSchema = z
-  .string()
-  .regex(/^\d{14}$/, 'CNPJ must contain exactly 14 digits')
-
+const cpfSchema = z.string().regex(/^\d{11}$/, 'CPF must contain exactly 11 digits')
+const cnpjSchema = z.string().regex(/^\d{14}$/, 'CNPJ must contain exactly 14 digits')
 const documentNumberSchema = z.union([cpfSchema, cnpjSchema], {
   errorMap: () => ({ message: 'Must be a valid CPF or CNPJ' }),
 })
@@ -41,7 +35,6 @@ const zRegisterSchema = z
       errorMap: () => ({ message: 'Document type must be either COMMON or MERCHANT' }),
     }),
     documentNumber: documentNumberSchema,
-    cpf: cpfSchema,
   })
   .refine(data => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
@@ -58,7 +51,7 @@ const zRegisterSchema = z
       return true
     },
     {
-      message: 'COMMON users must provide CPF (11 digits), MERCHANT users must provide CNPJ (14 digits)',
+      message: 'COMMON must provide CPF (11d); MERCHANT must provide CNPJ (14d)',
       path: ['documentNumber'],
     }
   )

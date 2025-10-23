@@ -14,16 +14,21 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid())
   name String
-  cpf String @unique
   email String @unique
   password String
-  documentType String // COMMON or MERCHANT
+  documentType String
   documentNumber String @unique
-  balance Int @default(100000) // proposito de teste, só pra ter um saldo pra testar as transações
+  balance Int @default(100000)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  transactionsSent Transaction[] @relation("payerTransactions")
+  transactionsReceived Transaction[] @relation("payeeTransactions")
+
+  @@index([email])
+  @@index([documentNumber])
 }
 
 model Transaction {
@@ -31,7 +36,25 @@ model Transaction {
   value Int
   payerId String
   payeeId String
-  status String // PENDING, SUCCESS, FAILED
+  payer   User @relation("payerTransactions", fields: [payerId], references: [id])
+  payee   User @relation("payeeTransactions", fields: [payeeId], references: [id])
+  status String
+  idempotencyKey String? @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
+}
+
+model NotificationOutbox {
+  id String @id @default(uuid())
+  email String
+  message String
+  status String
+  attempts Int @default(0)
+  lastError String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, createdAt])
 }
