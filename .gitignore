@@ -29,4 +29,8 @@ lerna-debug.log*
 
 /src/generated/prisma
 dist
-*.dbtest*.db*
+
+# Database files
+*.db
+*.db-journal
+test*.db*

@@ -52,7 +52,7 @@ afterEach(async () => {
 
 afterAll(async () => {
   await prisma.$disconnect();
-  
+
   // Clean up test database files
   try {
     if (fs.existsSync(testDbName)) {
