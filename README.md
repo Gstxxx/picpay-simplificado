@@ -24,7 +24,7 @@ A simplified payment platform API built with TypeScript, Hono, and Prisma.
 1. **Clone the repository**
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Gstxxx/picpay-simplificado
 cd picpay-simplificado
 ```
 
